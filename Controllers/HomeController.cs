@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using sm_coding_challenge.Models;
 using sm_coding_challenge.Services.DataProvider;
+using smcodingchallenge.Models;
 
 namespace sm_coding_challenge.Controllers
 {
@@ -24,27 +25,22 @@ namespace sm_coding_challenge.Controllers
         }
 
         [HttpGet]
-        public IActionResult Player(string id)
-        {
-            return Json(_dataProvider.GetPlayerById(id));
-        }
-
-        [HttpGet]
-        public IActionResult Players(string ids)
+        public async Task<IActionResult> PlayersAsync(string ids)
         {
             var idList = ids.Split(',');
-            var returnList = new List<PlayerModel>();
-            foreach (var id in idList)
-            {
-                returnList.Add(_dataProvider.GetPlayerById(id));
-            }
-            return Json(returnList);
+            return Ok(await _dataProvider.GetPlayers(idList, (int)PlayersFlagType.players));
         }
 
         [HttpGet]
-        public IActionResult LatestPlayers(string ids)
+        public async Task<IActionResult> AllPlayersAsync()
         {
-            throw new NotImplementedException("Method Needs to be Implemented");
+            return Ok(await _dataProvider.GetPlayers(null, (int)PlayersFlagType.allPlayers));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LatestPlayersAsync()
+        {
+            return Ok(await _dataProvider.GetPlayers(null, (int)PlayersFlagType.latestPlayers));
         }
 
         public IActionResult Error()
